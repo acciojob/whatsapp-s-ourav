@@ -40,8 +40,10 @@ public class WhatsappRepository {
         int noOfParticipants = users.size();
         User admin = users.get(0);
         Group newGroup=new Group();
+        newGroup.setNumberOfParticipants(noOfParticipants);
         if(noOfParticipants==2){
             newGroup.setName(users.get(1).getName());
+
         }
         else if (noOfParticipants>2){
             this.customGroupCount++;
@@ -49,6 +51,7 @@ public class WhatsappRepository {
         }
         groupUserMap.put(newGroup,users);
         adminMap.put(newGroup,admin);
+        groupMessageMap.put(newGroup,new ArrayList<>());
         return newGroup;
     }
 
@@ -70,16 +73,15 @@ public class WhatsappRepository {
             throw new Exception("You are not allowed to send message");
         }
 
-        List <Message> msgList;
-        if(!groupMessageMap.containsKey(group)){
-            msgList=new ArrayList<>();
+        if(!groupMessageMap.get(group).contains(message)){
+            groupMessageMap.get(group).add(message);
         }
-        else msgList=groupMessageMap.get(message);
 
-        msgList.add(message);
-        groupMessageMap.put(group,msgList);
-        senderMap.put(message,sender);
-        return msgList.size();
+        if(!senderMap.containsKey(message)){
+            senderMap.put(message,sender);
+        }
+
+        return groupMessageMap.get(group).size();
     }
 
 
